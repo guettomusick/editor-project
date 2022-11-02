@@ -1,8 +1,11 @@
+import './firebase'
+
 import express from 'express'
 import cors from 'cors'
 import expressWs from 'express-ws'
 
 import apiRoutes from './routes'
+
 
 const app = express()
 const PORT = 3001

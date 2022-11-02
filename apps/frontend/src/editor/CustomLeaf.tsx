@@ -10,8 +10,16 @@ export interface CustomText extends BaseText {
 }
 
 export const CustomLeaf: React.FC<RenderLeafProps> = ({ attributes, children, leaf }) => {
+  const style = {
+    fontWeight: leaf.bold ? '700' : '400',
+    fontStyle: leaf.italic ? 'italic' : 'normal',
+    textDecoration: leaf.underline ? 'underline' : 'none',
+  }
+
+  const className = leaf.underline ? 's1' : ''
+
   if (leaf.bold) {
-    children = <strong>{children}</strong>
+    children = <b>{children}</b>
   }
 
   if (leaf.code) {
@@ -19,14 +27,14 @@ export const CustomLeaf: React.FC<RenderLeafProps> = ({ attributes, children, le
   }
 
   if (leaf.italic) {
-    children = <em>{children}</em>
+    children = <i>{children}</i>
   }
 
   if (leaf.underline) {
     children = <u>{children}</u>
   }
 
-  return <span {...attributes}>{children}</span>
+  return <b {...attributes} style={style} className={className} >{children}</b>
 }
 
 

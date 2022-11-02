@@ -8,7 +8,7 @@ import { SingleNote } from '../../src/notes'
 const Home: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
-  const noteId = String(id)
+  const noteId = id && String(id)
 
   return (
     <>
