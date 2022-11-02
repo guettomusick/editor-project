@@ -10,7 +10,7 @@ import * as map from 'lib0/map';
 import * as ws from 'ws';
 import { slateNodesToInsertDelta } from '@slate-yjs/core';
 
-import { getFirestore, FieldValue, Firestore } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { Node } from 'slate';
 
 const db = getFirestore();
