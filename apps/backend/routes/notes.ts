@@ -1,4 +1,3 @@
-import { initializeApp } from 'firebase-admin/app'
 import express from 'express';
 import { WebsocketRequestHandler } from 'express-ws';
 
@@ -11,7 +10,8 @@ import * as map from 'lib0/map';
 import * as ws from 'ws';
 import { slateNodesToInsertDelta } from '@slate-yjs/core';
 
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue, Firestore } from 'firebase-admin/firestore';
+import { Node } from 'slate';
 
 const db = getFirestore();
 
@@ -37,7 +37,7 @@ enum DOC_STATUS {
   NOT_INITIALIZED = 2,
 }
 
-const updateHandler = async (update: Uint8Array, _: any, doc: WSSharedDoc) => {
+const updateHandler = async (update: Uint8Array, _: unknown, doc: WSSharedDoc) => {
   const encoder = encoding.createEncoder();
   encoding.writeVarUint(encoder, messageSync);
   syncProtocol.writeUpdate(encoder, update);
@@ -49,7 +49,7 @@ const updateHandler = async (update: Uint8Array, _: any, doc: WSSharedDoc) => {
   if (doc.initialized === DOC_STATUS.INITIALIZED) {
     const docRef = db.collection('docs').doc(doc.id);
     await docRef.update({
-      updates: FieldValue.arrayUnion(update),
+      updates: FieldValue.arrayUnion(Buffer.from(update).toString('base64')),
       title: yTitle.toString(),
     });
   }
@@ -62,7 +62,8 @@ const transformPersistedDoc = (doc: FirebaseFirestore.DocumentSnapshot<FirebaseF
   const updates = doc.data()?.updates || [];
   yDoc.transact(() => {
     for (let i = 0; i < updates.length; i++) {
-      Y.applyUpdate(yDoc, updates[i]);
+      const update = Buffer.from(updates[i], 'base64')
+      Y.applyUpdate(yDoc, update);
     }
   });
 
@@ -158,14 +159,14 @@ class WSSharedDoc extends Y.Doc {
       this.initialized = DOC_STATUS.INITIALIZING;
       const persistedYDoc = await getPersistedDoc(this.id);
       Y.applyUpdate(this, Y.encodeStateAsUpdate(persistedYDoc));
+      this.initialized = DOC_STATUS.INITIALIZED;
 
       // If doc it's empty add initial slate value (required)
       const sharedRoot = this.get('content', Y.XmlText) as Y.XmlText;
       if (sharedRoot.length === 0) {
-        const insertDelta = slateNodesToInsertDelta(initialValue);
+        const insertDelta = slateNodesToInsertDelta(initialValue as Node[]);
         sharedRoot.applyDelta(insertDelta);
       }
-      this.initialized = DOC_STATUS.INITIALIZED;
     }
   }
 }
@@ -189,7 +190,6 @@ const closeConn = (conn: ws, conns: Map<ws, Set<number>>, doc?: WSSharedDoc) => 
     /**
      * @type {Set<number>}
      */
-    // @ts-ignore
     const controlledIds = conns.get(conn);
     conns.delete(conn);
 
@@ -211,7 +211,7 @@ const closeConn = (conn: ws, conns: Map<ws, Set<number>>, doc?: WSSharedDoc) => 
   conn.close();
 };
 
-const send = (conn: ws, m: any, conns: Map<ws, Set<number>>, doc?: WSSharedDoc) => {
+const send = (conn: ws, m: unknown, conns: Map<ws, Set<number>>, doc?: WSSharedDoc) => {
   if (conn.readyState !== ws.CONNECTING && conn.readyState !== ws.OPEN) {
     closeConn(conn, conns, doc);
   }
@@ -230,7 +230,6 @@ const send = (conn: ws, m: any, conns: Map<ws, Set<number>>, doc?: WSSharedDoc) 
 const pingTimeout = 30000;
 
 const noteHandler: WebsocketRequestHandler = async (ws, req) => {
-  const id = Math.random()
   const doc = getYDoc(req.params.id);
   doc.conns.set(ws, new Set());
   await doc.initialize()
@@ -327,7 +326,7 @@ db.collection('docs').get().then((docs) => docs.forEach(doc => {
   allMap.set(doc.id, doc.data()?.title || '')
 }))
 
-allDoc.on('update', (update: Uint8Array, _: any) => {
+allDoc.on('update', (update: Uint8Array) => {
   const encoder = encoding.createEncoder();
   encoding.writeVarUint(encoder, messageSync);
   syncProtocol.writeUpdate(encoder, update);
@@ -335,7 +334,7 @@ allDoc.on('update', (update: Uint8Array, _: any) => {
   allConns.forEach((_, conn) => send(conn, message, allConns));
 })
 
-const notesHandler: WebsocketRequestHandler = (ws, req) => {
+const notesHandler: WebsocketRequestHandler = (ws) => {
   allConns.set(ws, new Set());
 
   ws.on('message', (message) => {

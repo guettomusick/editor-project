@@ -86,13 +86,13 @@ export const useNote = (id: string) => {
         yDoc
       );
 
-      provider.awareness.on('change', ({added, updated, removed}: { added: number[], updated: number[], removed: number[]}) => {
+      provider.awareness.on('change', ({added, removed}: { added: number[], updated: number[], removed: number[]}) => {
         const _users: number[] = [
           ...users || [],
         ]
 
         added.forEach(u => _users.push(u))
-        added.forEach(u => _users.indexOf(u) && _users.splice(_users.indexOf(u), 1))
+        removed.forEach(u => _users.indexOf(u) && _users.splice(_users.indexOf(u), 1))
         setUsers && setUsers(_users)
       })
 
@@ -113,7 +113,7 @@ export const useNote = (id: string) => {
 
   if (wsReadyState >= 0) {
     if (wsReadyState !== WebSocket.OPEN) {
-      readyState = readyState;
+      readyState = wsReadyState;
     } else {
       if (length === 0) {
         readyState = ReadyState.CONNECTING;
@@ -122,15 +122,6 @@ export const useNote = (id: string) => {
       }
     }
   }
-
-
-  const connectionStatusColor = {
-    [ReadyState.CONNECTING]: 'info',
-    [ReadyState.OPEN]: 'success',
-    [ReadyState.CLOSING]: 'warning',
-    [ReadyState.CLOSED]: 'error',
-    [ReadyState.UNINSTANTIATED]: 'error',
-  }[readyState]
 
   const updateTitle: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback((event) => {
     if (yTitle) {

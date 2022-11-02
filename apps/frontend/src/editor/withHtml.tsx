@@ -5,7 +5,7 @@ import { ReactEditor } from "slate-react"
 import { CustomElement } from "./CustomElement"
 import { Transforms } from 'slate'
 
-const ELEMENT_TAGS: Record<string, (el: HTMLElement) => Object> = {
+const ELEMENT_TAGS: Record<string, (el: HTMLElement) => {type: string}> = {
   A: (el: HTMLElement) => ({ type: 'link', url: el.getAttribute('href') }),
   BLOCKQUOTE: () => ({ type: 'quote' }),
   H1: () => ({ type: 'heading-one' }),
@@ -22,14 +22,13 @@ const ELEMENT_TAGS: Record<string, (el: HTMLElement) => Object> = {
 }
 
 // COMPAT: `B` is omitted here because Google Docs uses `<b>` in weird ways.
-const TEXT_TAGS: Record<string, (el: HTMLElement) => Object> = {
+const TEXT_TAGS: Record<string, (el: HTMLElement) => Record<string, boolean>> = {
   CODE: () => ({ code: true }),
   DEL: () => ({ strikethrough: true }),
   EM: () => ({ italic: true }),
   I: () => ({ italic: true }),
   S: () => ({ strikethrough: true }),
   STRONG: () => ({ bold: true }),
-  // B: () => ({ bold: true }),
   U: () => ({ underline: true }),
 }
 

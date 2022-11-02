@@ -1,14 +1,14 @@
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { FC, useEffect } from 'react';
-import { CustomElement, CustomElementType } from './CustomElement';
+import React, { FC } from 'react';
+import { CustomElement } from './CustomElement';
 import TextField from '@mui/material/TextField';
 import { changeHyperlink } from './helpers';
 import { useSlate } from 'slate-react';
-import { Editor, Path, Element as SlateElement } from 'slate';
+import { Editor, Path } from 'slate';
 
 const style = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -21,7 +21,7 @@ const style = {
 
 type Props = {
   path?: Path;
-  onClose?: (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => void;
+  onClose?: (event: unknown, reason: 'backdropClick' | 'escapeKeyDown') => void;
 };
 
 const HyperlinkModal: FC<Props> = ({ path, onClose }) => {

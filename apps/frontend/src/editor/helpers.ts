@@ -1,7 +1,7 @@
-import { Editor, Transforms, Element as SlateElement, Path, Text, Node } from 'slate'
+import { Editor, Transforms, Element as SlateElement, Path, Node } from 'slate'
 import isHotkey from 'is-hotkey'
 import { KeyboardEvent } from 'react'
-import { CustomElementType, CustomElement } from './CustomElement'
+import { CustomElementType } from './CustomElement'
 import { CustomText } from './CustomLeaf'
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']

@@ -47,7 +47,7 @@ const Button: React.FC<ButtonProps> = ({ active, children, onMouseDown }) => (
 
 interface BlockButtonProps {
   format: CustomElementType;
-  icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
+  icon: OverridableComponent<SvgIconTypeMap<unknown, 'svg'>>;
 }
 
 const BlockButton: React.FC<BlockButtonProps> = ({ format, icon: Icon }) => {
@@ -70,31 +70,31 @@ const BlockSelect: React.FC = () => {
   const typesMap: [CustomElementType, JSX.Element][] = [
     [
       CustomElementType.paragraph,
-      <p style={{ padding: 0, margin: 0 }}>Normal Text</p>,
+      <p style={{ padding: 0, margin: 0 }} key="paragraph">Normal Text</p>,
     ],
     [
       CustomElementType.headingOne,
-      <h1 style={{ padding: 0, margin: 0 }}>Heading 1</h1>,
+      <h1 style={{ padding: 0, margin: 0 }} key="headingOne">Heading 1</h1>,
     ],
     [
       CustomElementType.headingTwo,
-      <h2 style={{ padding: 0, margin: 0 }}>Heading 2</h2>,
+      <h2 style={{ padding: 0, margin: 0 }} key="headingTwo">Heading 2</h2>,
     ],
     [
       CustomElementType.headingThree,
-      <h3 style={{ padding: 0, margin: 0 }}>Heading 3</h3>,
+      <h3 style={{ padding: 0, margin: 0 }} key="headingThree">Heading 3</h3>,
     ],
     [
       CustomElementType.headingFour,
-      <h4 style={{ padding: 0, margin: 0 }}>Heading 4</h4>,
+      <h4 style={{ padding: 0, margin: 0 }} key="headingFour">Heading 4</h4>,
     ],
     [
       CustomElementType.headingFive,
-      <h5 style={{ padding: 0, margin: 0 }}>Heading 5</h5>,
+      <h5 style={{ padding: 0, margin: 0 }} key="headingFive">Heading 5</h5>,
     ],
     [
       CustomElementType.headingSix,
-      <h6 style={{ padding: 0, margin: 0 }}>Heading 6</h6>,
+      <h6 style={{ padding: 0, margin: 0 }} key="headingSix">Heading 6</h6>,
     ],
   ];
 
@@ -134,7 +134,7 @@ const BlockSelect: React.FC = () => {
 
 interface MarkButtonProps {
   format: keyof CustomText;
-  icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
+  icon: OverridableComponent<SvgIconTypeMap<unknown, 'svg'>>;
 }
 
 const MarkButton: React.FC<MarkButtonProps> = ({ format, icon: Icon }) => {
